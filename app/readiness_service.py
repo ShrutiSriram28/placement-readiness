@@ -15,7 +15,7 @@ from app.models import (
     ReadinessDimension,
     ReadinessEvidence,
     RoleProfile,
-    StudentProfile,
+    StudentProfile
 )
 
 
