@@ -4,6 +4,7 @@ import json
 
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
+from pathlib import Path
 
 from nicegui import app, events, run, ui
 from sqlalchemy import Column, Date, Float, ForeignKey, Integer, Table, UniqueConstraint, func, select
@@ -56,6 +57,16 @@ from app.readiness_service import (
 )
 from app.resume_service import ResumeParseError, extract_resume_text
 from app.security import hash_password, verify_password
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+ASSETS_DIR = PROJECT_ROOT / "assets"
+
+SIGNIN_IMAGE_PATH = "/assets/signin_image.png"
+LOGO_WHITE_PATH = "/assets/logo_white.png"
+LOGO_PURPLE_PATH = "/assets/logo_purple.png"
+FAVICON_PATH = ASSETS_DIR / "logo_purple.png"
+
+app.add_static_files("/assets", ASSETS_DIR)
 
 
 mentor_weekly_capacity = Table(
@@ -151,11 +162,20 @@ def navigation(user):
     with ui.header().classes(
         "items-center justify-between px-6"
     ):
-        ui.label(
-            settings.app_name
-        ).classes(
-            "text-lg font-semibold"
-        )
+        with ui.row().classes(
+            "items-center gap-3"
+        ):
+            ui.image(
+                LOGO_WHITE_PATH
+            ).classes(
+                "w-8 h-8 object-contain"
+            )
+
+            ui.label(
+                settings.app_name
+            ).classes(
+                "text-lg font-semibold text-white"
+            )
 
         with ui.row().classes(
             "items-center gap-3"
@@ -169,19 +189,14 @@ def navigation(user):
             ui.button(
                 "Dashboard",
                 icon="dashboard",
-                on_click=lambda: ui.navigate.to(
-                    "/"
-                ),
+                on_click=lambda: ui.navigate.to("/")
             ).props(
                 "flat color=white"
             )
 
             def logout():
                 app.storage.user.clear()
-
-                ui.navigate.to(
-                    "/login"
-                )
+                ui.navigate.to("/login")
 
             ui.button(
                 "Logout",
@@ -506,98 +521,161 @@ def login_page():
         ui.navigate.to("/")
         return
 
-    with ui.column().classes(
-        "w-full max-w-md mx-auto mt-20 gap-4"
+    ui.query("body").style(
+        "margin: 0; overflow-x: hidden;"
+    )
+    ui.query(".nicegui-content").classes(
+        "p-0"
+    )
+
+    with ui.row().classes(
+        "w-full min-h-screen gap-0 flex-nowrap"
     ):
-        heading(
-            "Sign in"
-        )
-
-        email = ui.input(
-            "Email"
-        ).props(
-            "type=email"
-        ).classes(
-            "w-full"
-        )
-
-        password = ui.input(
-            "Password",
-            password=True,
-            password_toggle_button=True,
-        ).classes(
-            "w-full"
-        )
-
-        def login():
-            db = db_session()
-
-            try:
-                normalized = (
-                    clean_target(
-                        email.value
-                    ).lower()
+        with ui.element("div").classes(
+            "w-2/5 min-h-screen relative overflow-hidden"
+        ).style(
+            f"""
+            background-image: url('{SIGNIN_IMAGE_PATH}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            """
+        ):
+            with ui.column().classes(
+                "absolute top-24 left-0 right-0 items-center gap-2 z-10"
+            ):
+                ui.image(
+                    LOGO_PURPLE_PATH
+                ).classes(
+                    "w-30 h-30 object-contain"
                 )
 
-                user = db.scalar(
-                    select(
-                        User
-                    ).where(
-                        User.email
-                        == normalized
-                    )
+                ui.label(
+                    "Placement Readiness Portal"
+                ).classes(
+                    "font-bold text-slate-800 text-center"
+                ).style(
+                    "font-size: 45px; line-height: 1.15;"
                 )
 
-                if (
-                    not user
-                    or not user.is_active
-                    or not verify_password(
-                        password.value
-                        or "",
-                        user.password_hash,
-                    )
+        with ui.column().classes(
+            "w-3/5 min-h-screen items-center justify-center px-12 py-10"
+        ):
+            with ui.column().classes(
+                "w-full max-w-md gap-4"
+            ):
+                ui.label(
+                    "Welcome back"
+                ).classes(
+                    "text-4xl font-bold text-slate-900"
+                )
+
+                ui.label(
+                    "Sign in to continue to your placement readiness portal"
+                ).classes(
+                    "text-base text-gray-500 mb-3"
+                )
+
+                email = ui.input(
+                    "Email"
+                ).props(
+                    "type=email outlined"
+                ).classes(
+                    "w-full"
+                )
+
+                password = ui.input(
+                    "Password",
+                    password=True,
+                    password_toggle_button=True,
+                ).props(
+                    "outlined"
+                ).classes(
+                    "w-full"
+                )
+
+                def login():
+                    db = db_session()
+
+                    try:
+                        normalized = (
+                            clean_target(
+                                email.value
+                            ).lower()
+                        )
+
+                        user = db.scalar(
+                            select(
+                                User
+                            ).where(
+                                User.email
+                                == normalized
+                            )
+                        )
+
+                        if (
+                            not user
+                            or not user.is_active
+                            or not verify_password(
+                                password.value
+                                or "",
+                                user.password_hash,
+                            )
+                        ):
+                            ui.notify(
+                                "Invalid email or password.",
+                                type="negative",
+                            )
+                            return
+
+                        app.storage.user[
+                            "user_id"
+                        ] = user.id
+
+                        audit(
+                            db,
+                            user.id,
+                            "login",
+                            "user",
+                            user.id,
+                        )
+
+                        db.commit()
+
+                        ui.navigate.to("/")
+
+                    finally:
+                        db.close()
+
+                ui.button(
+                    "Sign in",
+                    on_click=login,
+                ).props(
+                    "unelevated no-caps"
+                ).classes(
+                    "w-full h-12 text-base font-semibold mt-1"
+                )
+
+                with ui.row().classes(
+                    "w-full justify-center items-center gap-1 mt-2"
                 ):
-                    ui.notify(
-                        "Invalid email or password.",
-                        type="negative",
+                    ui.label(
+                        "New to the portal?"
+                    ).classes(
+                        "text-gray-500"
                     )
-                    return
 
-                app.storage.user[
-                    "user_id"
-                ] = user.id
-
-                audit(
-                    db,
-                    user.id,
-                    "login",
-                    "user",
-                    user.id,
-                )
-
-                db.commit()
-
-                ui.navigate.to("/")
-
-            finally:
-                db.close()
-
-        ui.button(
-            "Sign in",
-            on_click=login,
-        ).classes(
-            "w-full"
-        )
-
-        ui.button(
-            "Create account",
-            on_click=lambda:
-                ui.navigate.to(
-                    "/signup"
-                ),
-        ).props(
-            "flat"
-        )
+                    ui.button(
+                        "Create account",
+                        on_click=lambda:
+                            ui.navigate.to(
+                                "/signup"
+                            ),
+                    ).props(
+                        "flat no-caps dense"
+                    ).classes(
+                        "font-semibold"
+                    )
 
 
 @ui.page("/signup")
@@ -608,192 +686,271 @@ def signup_page():
         ui.navigate.to("/")
         return
 
-    with ui.column().classes(
-        "w-full max-w-md mx-auto mt-12 gap-4"
+    ui.query("body").style(
+        "margin: 0; overflow-x: hidden;"
+    )
+    ui.query(".nicegui-content").classes(
+        "p-0"
+    )
+
+    with ui.row().classes(
+        "w-full min-h-screen gap-0 flex-nowrap"
     ):
-        heading(
-            "Create account"
-        )
-
-        name = ui.input(
-            "Full name"
-        ).classes(
-            "w-full"
-        )
-
-        email = ui.input(
-            "Email"
-        ).props(
-            "type=email"
-        ).classes(
-            "w-full"
-        )
-
-        password = ui.input(
-            "Password",
-            password=True,
-            password_toggle_button=True,
-        ).classes(
-            "w-full"
-        )
-
-        role = ui.select(
-            {
-                UserRole.STUDENT.value:
-                    "Student",
-                UserRole.MENTOR.value:
-                    "Mentor",
-                UserRole.FACULTY.value:
-                    "Faculty",
-            },
-            value=(
-                UserRole.STUDENT.value
-            ),
-            label="Role",
-        ).classes(
-            "w-full"
-        )
-
-        staff_code = ui.input(
-            "Staff signup code",
-            password=True,
-            password_toggle_button=True,
-        ).classes(
-            "w-full"
-        )
-
-        def signup():
-            name_value = clean_target(
-                name.value
-            )
-
-            email_value = clean_target(
-                email.value
-            ).lower()
-
-            password_value = (
-                password.value
-                or ""
-            )
-
-            if not name_value:
-                ui.notify(
-                    "Name is required.",
-                    type="warning",
-                )
-                return
-
-            if (
-                not email_value
-                or "@"
-                not in email_value
+        with ui.element("div").classes(
+            "w-2/5 min-h-screen relative overflow-hidden"
+        ).style(
+            f"""
+            background-image: url('{SIGNIN_IMAGE_PATH}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            """
+        ):
+            with ui.column().classes(
+                "absolute top-24 left-0 right-0 items-center gap-2 z-10"
             ):
-                ui.notify(
-                    "Enter a valid email.",
-                    type="warning",
+                ui.image(
+                    LOGO_PURPLE_PATH
+                ).classes(
+                    "w-30 h-30 object-contain"
                 )
-                return
 
-            if len(
-                password_value
-            ) < 12:
-                ui.notify(
-                    "Password must contain at least 12 characters.",
-                    type="warning",
+                ui.label(
+                    "Placement Readiness Portal"
+                ).classes(
+                    "font-bold text-slate-800 text-center"
+                ).style(
+                    "font-size: 45px; line-height: 1.15;"
                 )
-                return
 
-            selected_role = (
-                UserRole(
-                    role.value
-                )
-            )
-
-            if (
-                selected_role
-                != UserRole.STUDENT
-                and staff_code.value
-                != settings.staff_signup_code
+        with ui.column().classes(
+            "w-3/5 min-h-screen items-center justify-center px-12 py-8"
+        ):
+            with ui.column().classes(
+                "w-full max-w-md gap-3"
             ):
-                ui.notify(
-                    "Invalid staff signup code.",
-                    type="negative",
+                ui.label(
+                    "Create your account"
+                ).classes(
+                    "text-4xl font-bold text-slate-900"
                 )
-                return
 
-            db = db_session()
+                ui.label(
+                    "Get started with your placement readiness portal"
+                ).classes(
+                    "text-base text-gray-500 mb-2"
+                )
 
-            try:
-                user = User(
-                    email=email_value,
-                    full_name=name_value,
-                    password_hash=(
-                        hash_password(
-                            password_value
-                        )
+                name = ui.input(
+                    "Full name"
+                ).props(
+                    "outlined"
+                ).classes(
+                    "w-full"
+                )
+
+                email = ui.input(
+                    "Email"
+                ).props(
+                    "type=email outlined"
+                ).classes(
+                    "w-full"
+                )
+
+                password = ui.input(
+                    "Password",
+                    password=True,
+                    password_toggle_button=True,
+                ).props(
+                    "outlined"
+                ).classes(
+                    "w-full"
+                )
+
+                role = ui.select(
+                    {
+                        UserRole.STUDENT.value:
+                            "Student",
+                        UserRole.MENTOR.value:
+                            "Mentor",
+                        UserRole.FACULTY.value:
+                            "Faculty",
+                    },
+                    value=(
+                        UserRole.STUDENT.value
                     ),
-                    role=selected_role,
+                    label="Role",
+                ).props(
+                    "outlined options-dense"
+                ).classes(
+                    "w-full"
                 )
 
-                db.add(
-                    user
+                staff_code = ui.input(
+                    "Staff signup code",
+                    password=True,
+                    password_toggle_button=True,
+                ).props(
+                    "outlined"
+                ).classes(
+                    "w-full"
                 )
 
-                db.flush()
+                def signup():
+                    name_value = clean_target(
+                        name.value
+                    )
 
-                if (
-                    selected_role
-                    == UserRole.STUDENT
-                ):
-                    db.add(
-                        StudentProfile(
-                            user_id=user.id
+                    email_value = clean_target(
+                        email.value
+                    ).lower()
+
+                    password_value = (
+                        password.value
+                        or ""
+                    )
+
+                    if not name_value:
+                        ui.notify(
+                            "Name is required.",
+                            type="warning",
+                        )
+                        return
+
+                    if (
+                        not email_value
+                        or "@"
+                        not in email_value
+                    ):
+                        ui.notify(
+                            "Enter a valid email.",
+                            type="warning",
+                        )
+                        return
+
+                    if len(
+                        password_value
+                    ) < 12:
+                        ui.notify(
+                            "Password must contain at least 12 characters.",
+                            type="warning",
+                        )
+                        return
+
+                    selected_role = (
+                        UserRole(
+                            role.value
                         )
                     )
 
-                elif (
-                    selected_role
-                    == UserRole.MENTOR
-                ):
-                    db.add(
-                        MentorProfile(
-                            user_id=user.id
+                    if (
+                        selected_role
+                        != UserRole.STUDENT
+                        and staff_code.value
+                        != settings.staff_signup_code
+                    ):
+                        ui.notify(
+                            "Invalid staff signup code.",
+                            type="negative",
                         )
+                        return
+
+                    db = db_session()
+
+                    try:
+                        user = User(
+                            email=email_value,
+                            full_name=name_value,
+                            password_hash=(
+                                hash_password(
+                                    password_value
+                                )
+                            ),
+                            role=selected_role,
+                        )
+
+                        db.add(
+                            user
+                        )
+
+                        db.flush()
+
+                        if (
+                            selected_role
+                            == UserRole.STUDENT
+                        ):
+                            db.add(
+                                StudentProfile(
+                                    user_id=user.id
+                                )
+                            )
+
+                        elif (
+                            selected_role
+                            == UserRole.MENTOR
+                        ):
+                            db.add(
+                                MentorProfile(
+                                    user_id=user.id
+                                )
+                            )
+
+                        audit(
+                            db,
+                            user.id,
+                            "signup",
+                            "user",
+                            user.id,
+                        )
+
+                        db.commit()
+
+                        app.storage.user[
+                            "user_id"
+                        ] = user.id
+
+                        ui.navigate.to("/")
+
+                    except IntegrityError:
+                        db.rollback()
+
+                        ui.notify(
+                            "An account with this email already exists.",
+                            type="negative",
+                        )
+
+                    finally:
+                        db.close()
+
+                ui.button(
+                    "Create account",
+                    on_click=signup,
+                ).props(
+                    "unelevated no-caps"
+                ).classes(
+                    "w-full h-12 text-base font-semibold mt-1"
+                )
+
+                with ui.row().classes(
+                    "w-full justify-center items-center gap-1 mt-2"
+                ):
+                    ui.label(
+                        "Already have an account?"
+                    ).classes(
+                        "text-gray-500"
                     )
 
-                audit(
-                    db,
-                    user.id,
-                    "signup",
-                    "user",
-                    user.id,
-                )
-
-                db.commit()
-
-                app.storage.user[
-                    "user_id"
-                ] = user.id
-
-                ui.navigate.to("/")
-
-            except IntegrityError:
-                db.rollback()
-
-                ui.notify(
-                    "An account with this email already exists.",
-                    type="negative",
-                )
-
-            finally:
-                db.close()
-
-        ui.button(
-            "Create account",
-            on_click=signup,
-        ).classes(
-            "w-full"
-        )
+                    ui.button(
+                        "Sign in",
+                        on_click=lambda:
+                            ui.navigate.to(
+                                "/login"
+                            ),
+                    ).props(
+                        "flat no-caps dense"
+                    ).classes(
+                        "font-semibold"
+                    )
 
 
 @ui.page("/")
@@ -5108,7 +5265,8 @@ def faculty_page():
 
 
 ui.run(
-    title=settings.app_name,
+    title="Placement Readiness Portal",
+    favicon=FAVICON_PATH,
     host=settings.host,
     port=settings.port,
     storage_secret=(

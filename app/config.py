@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
     host: str = Field(default="0.0.0.0", alias="HOST")
     port: int = Field(default=8080, alias="PORT")
-    app_name: str = ("Placement Readiness and Intervention System")
+    app_name: str = ("Placement Readiness Portal")
 
     model_config = SettingsConfigDict(
         env_file=".env",
