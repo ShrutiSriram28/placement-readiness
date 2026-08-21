@@ -1,0 +1,21 @@
+intervention_id,student_id,student_name,readiness_area,delivery,intervention_title,status,intervention_date,mentor_id,mentor_name,score_before,score_before_date,score_after,score_after_date,readiness_improvement
+1,6,student1,coding,self_practice,Coding Improvement Plan,completed,2026-07-05 23:43:54.709071+00,2,mentor1,54,2026-06-23 23:43:54.709071+00,59,2026-07-15 23:43:54.709071+00,5
+2,7,student2,aptitude,self_practice,Aptitude Improvement Plan,completed,2026-07-06 23:43:54.709071+00,3,mentor2,48,2026-06-23 23:43:54.709071+00,60,2026-07-15 23:43:54.709071+00,12
+3,8,student3,communication,ai,Communication Improvement Plan,completed,2026-07-07 23:43:54.709071+00,4,mentor3,60,2026-06-23 23:43:54.709071+00,62,2026-07-15 23:43:54.709071+00,2
+4,9,student4,project_depth,ai,Project Depth Improvement Plan,completed,2026-07-08 23:43:54.709071+00,5,mentor4,54,2026-06-23 23:43:54.709071+00,66,2026-07-15 23:43:54.709071+00,12
+5,10,student5,interview,mentor,Interview Improvement Plan,in_progress,2026-07-09 23:43:54.709071+00,2,mentor1,64,2026-06-23 23:43:54.709071+00,62,2026-07-15 23:43:54.709071+00,-2
+6,11,student6,coding,self_practice,Coding Improvement Plan,completed,2026-07-10 23:43:54.709071+00,3,mentor2,61,2026-06-23 23:43:54.709071+00,66,2026-07-15 23:43:54.709071+00,5
+7,12,student7,aptitude,self_practice,Aptitude Improvement Plan,completed,2026-07-11 23:43:54.709071+00,4,mentor3,60,2026-06-23 23:43:54.709071+00,61,2026-07-15 23:43:54.709071+00,1
+8,13,student8,communication,ai,Communication Improvement Plan,completed,2026-07-12 23:43:54.709071+00,5,mentor4,76,2026-06-23 23:43:54.709071+00,81,2026-07-15 23:43:54.709071+00,5
+9,14,student9,project_depth,ai,Project Depth Improvement Plan,completed,2026-07-13 23:43:54.709071+00,2,mentor1,74,2026-06-23 23:43:54.709071+00,80,2026-07-15 23:43:54.709071+00,6
+10,15,student10,interview,mentor,Interview Improvement Plan,in_progress,2026-07-04 23:43:54.709071+00,3,mentor2,42,2026-06-23 23:43:54.709071+00,54,2026-07-15 23:43:54.709071+00,12
+11,16,student11,coding,self_practice,Coding Improvement Plan,completed,2026-07-05 23:43:54.709071+00,4,mentor3,48,2026-06-23 23:43:54.709071+00,57,2026-07-15 23:43:54.709071+00,9
+12,17,student12,aptitude,self_practice,Aptitude Improvement Plan,completed,2026-07-06 23:43:54.709071+00,5,mentor4,54,2026-06-23 23:43:54.709071+00,60,2026-07-15 23:43:54.709071+00,6
+13,18,student13,communication,ai,Communication Improvement Plan,completed,2026-07-07 23:43:54.709071+00,2,mentor1,55,2026-06-23 23:43:54.709071+00,56,2026-07-15 23:43:54.709071+00,1
+14,19,student14,project_depth,ai,Project Depth Improvement Plan,completed,2026-07-08 23:43:54.709071+00,3,mentor2,57,2026-06-23 23:43:54.709071+00,60,2026-07-15 23:43:54.709071+00,3
+15,20,student15,interview,mentor,Interview Improvement Plan,in_progress,2026-07-09 23:43:54.709071+00,4,mentor3,64,2026-06-23 23:43:54.709071+00,65,2026-07-15 23:43:54.709071+00,1
+16,21,student16,coding,self_practice,Coding Improvement Plan,completed,2026-07-10 23:43:54.709071+00,5,mentor4,65,2026-06-23 23:43:54.709071+00,71,2026-07-15 23:43:54.709071+00,6
+17,22,student17,aptitude,self_practice,Aptitude Improvement Plan,completed,2026-07-11 23:43:54.709071+00,2,mentor1,65,2026-06-23 23:43:54.709071+00,68,2026-07-15 23:43:54.709071+00,3
+18,23,student18,communication,ai,Communication Improvement Plan,completed,2026-07-12 23:43:54.709071+00,3,mentor2,75,2026-06-23 23:43:54.709071+00,74,2026-07-15 23:43:54.709071+00,-1
+19,24,student19,project_depth,ai,Project Depth Improvement Plan,completed,2026-07-13 23:43:54.709071+00,4,mentor3,77,2026-06-23 23:43:54.709071+00,83,2026-07-15 23:43:54.709071+00,6
+20,25,student20,interview,mentor,Interview Improvement Plan,in_progress,2026-07-04 23:43:54.709071+00,5,mentor4,42,2026-06-23 23:43:54.709071+00,56,2026-07-15 23:43:54.709071+00,14

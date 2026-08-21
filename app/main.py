@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import json
+
 from datetime import datetime, timedelta, timezone
+from urllib.parse import quote
 
 from nicegui import app, events, run, ui
 from sqlalchemy import Column, Date, Float, ForeignKey, Integer, Table, UniqueConstraint, func, select
@@ -210,6 +213,125 @@ def heading(
 def section_heading(title, description):
     ui.label(title).classes("text-2xl font-semibold")
     ui.label(description).classes("text-gray-600 mb-4")
+
+
+TABLEAU_ALL = "__all__"
+
+TABLEAU_READINESS_AREAS = {
+    TABLEAU_ALL: "All readiness areas",
+    "Aptitude": "Aptitude",
+    "Coachability": "Coachability",
+    "Coding": "Coding",
+    "Communication": "Communication",
+    "Consistency": "Consistency",
+    "Interview Skills": "Interview Skills",
+    "Project Depth": "Project Depth",
+    "Resume Quality": "Resume Quality",
+}
+
+TABLEAU_ASSESSMENTS_BY_READINESS_AREA = {
+    "Aptitude": ["Aptitude Assessment"],
+    "Coding": ["Coding Assessment"],
+    "Communication": ["AI Mock Interview"],
+    "Interview Skills": ["AI Mock Interview"],
+    "Project Depth": ["AI Mock Interview"],
+    "Resume Quality": ["AI Mock Interview"],
+    "Coachability": [
+        "AI Mock Interview",
+        "Aptitude Assessment",
+        "Coding Assessment",
+    ],
+    "Consistency": [
+        "AI Mock Interview",
+        "Aptitude Assessment",
+        "Coding Assessment",
+    ],
+}
+
+TABLEAU_STUDENT_URL = (
+    "https://public.tableau.com/views/"
+    "student_dashboard_placement_readiness_analytics/"
+    "StudentDashboard"
+)
+
+TABLEAU_MENTOR_URL = (
+    "https://public.tableau.com/views/"
+    "mentor_dashboard_placement_readiness_analytics/"
+    "MentorDashboard"
+)
+
+TABLEAU_FACULTY_URL = (
+    "https://public.tableau.com/views/"
+    "faculty_dashboard_placement_readiness_analytics/"
+    "FacultyDashboard"
+)
+
+
+def tableau_view_url(base_url, filters=None):
+    url = (
+        f"{base_url}"
+        "?:showVizHome=no"
+        "&:embed=yes"
+        "&:device=desktop"
+        "&:toolbar=no"
+    )
+
+    for field, value in (filters or {}).items():
+        if value in (None, "", TABLEAU_ALL):
+            continue
+
+        url += (
+            f"&{quote(str(field), safe='')}="
+            f"{quote(str(value), safe='')}"
+        )
+
+    return url
+
+
+def tableau_iframe(url, height=1200):
+    return f"""
+    <div style="
+        width: 1200px;
+        max-width: 100%;
+        height: {height}px;
+        margin: 0 auto;
+        overflow: hidden;
+    ">
+        <iframe
+            src="{url}"
+            style="
+                width: 1200px;
+                height: {height}px;
+                max-width: none;
+                border: 0;
+                display: block;
+            "
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
+    """
+
+
+def tableau_viz_element(base_url, viz_id, height=1200):
+    return f"""
+    <div style="
+        width: 1200px;
+        max-width: 100%;
+        height: {height}px;
+        margin: 0 auto;
+        overflow: hidden;
+    ">
+        <tableau-viz
+            id="{viz_id}"
+            src="{base_url}"
+            width="1200"
+            height="{height}"
+            toolbar="hidden"
+            hide-tabs>
+        </tableau-viz>
+    </div>
+    """
 
 
 def clean_target(value):
@@ -817,6 +939,7 @@ def student_page():
                 "mock": mock_panel,
                 "interventions": interventions_panel,
                 "outcomes": outcomes_panel,
+                "analytics": analytics_panel,
             }
             for section_name, panel in sections.items():
                 panel.set_visibility(section_name == name)
@@ -832,6 +955,7 @@ def student_page():
             ui.button("AI Mock Interview", icon="record_voice_over", on_click=lambda: show_student_section("mock")).props("flat no-caps align=left").classes("w-full justify-start text-left")
             ui.button("Intervention Plan", icon="event_note", on_click=lambda: show_student_section("interventions")).props("flat no-caps align=left").classes("w-full justify-start text-left")
             ui.button("Placement Outcomes", icon="work", on_click=lambda: show_student_section("outcomes")).props("flat no-caps align=left").classes("w-full justify-start text-left")
+            ui.button("Placement Analytics", icon="analytics", on_click=lambda: show_student_section("analytics")).props("flat no-caps align=left").classes("w-full justify-start text-left")
 
         with ui.page_sticky(position="top-left", x_offset=8, y_offset=8):
             student_open_button = ui.button(icon="menu", on_click=student_drawer.toggle).props("round dense unelevated color=primary").tooltip("Open navigation")
@@ -2514,6 +2638,60 @@ def student_page():
                     on_click=save_outcome,
                 )
 
+            with ui.column().classes("w-full gap-4") as analytics_panel:
+                section_heading(
+                    "Placement Analytics",
+                    "Review your readiness progress and recruitment progress.",
+                )
+                ui.separator()
+
+                with ui.row().classes("w-full items-end gap-4 flex-wrap"):
+                    student_readiness_filter = ui.select(
+                        TABLEAU_READINESS_AREAS,
+                        value=TABLEAU_ALL,
+                        label="Readiness area",
+                    ).props(
+                        "outlined options-dense"
+                    ).classes(
+                        "w-full max-w-sm"
+                    )
+
+                student_tableau = ui.html(
+                    tableau_iframe(
+                        tableau_view_url(
+                            TABLEAU_STUDENT_URL,
+                            {
+                                "Student Name": user.full_name,
+                            },
+                        ),
+                        height=1200,
+                    ),
+                    sanitize=False,
+                ).classes("w-full")
+
+                def update_student_tableau():
+                    filters = {
+                        "Student Name": user.full_name,
+                    }
+
+                    if student_readiness_filter.value != TABLEAU_ALL:
+                        filters["Readiness Area"] = student_readiness_filter.value
+
+                    student_tableau.set_content(
+                        tableau_iframe(
+                            tableau_view_url(
+                                TABLEAU_STUDENT_URL,
+                                filters,
+                            ),
+                            height=1200,
+                        )
+                    )
+
+                student_readiness_filter.on(
+                    "update:model-value",
+                    lambda _: update_student_tableau(),
+                )
+
 
             target_panel.set_visibility(False)
             resume_panel.set_visibility(False)
@@ -2522,6 +2700,7 @@ def student_page():
             mock_panel.set_visibility(False)
             interventions_panel.set_visibility(False)
             outcomes_panel.set_visibility(False)
+            analytics_panel.set_visibility(False)
     finally:
         db.close()
 
@@ -3426,6 +3605,7 @@ def mentor_page():
                 "priorities": priority_panel,
                 "sessions": sessions_panel,
                 "evaluations": evaluations_panel,
+                "analytics": analytics_panel,
             }
             for section_name, panel in sections.items():
                 panel.set_visibility(section_name == name)
@@ -3437,6 +3617,7 @@ def mentor_page():
             ui.button("Student Priority Queue", icon="priority_high", on_click=lambda: show_mentor_section("priorities")).props("flat no-caps align=left").classes("w-full justify-start text-left")
             ui.button("Scheduled Sessions", icon="event", on_click=lambda: show_mentor_section("sessions")).props("flat no-caps align=left").classes("w-full justify-start text-left")
             ui.button("Student Evaluations", icon="rate_review", on_click=lambda: show_mentor_section("evaluations")).props("flat no-caps align=left").classes("w-full justify-start text-left")
+            ui.button("Placement Analytics", icon="analytics", on_click=lambda: show_mentor_section("analytics")).props("flat no-caps align=left").classes("w-full justify-start text-left")
 
         with ui.page_sticky(position="top-left", x_offset=8, y_offset=8):
             mentor_open_button = ui.button(icon="menu", on_click=mentor_drawer.toggle).props("round dense unelevated color=primary").tooltip("Open navigation")
@@ -4166,10 +4347,100 @@ def mentor_page():
                         on_click=save_evaluation,
                     )
 
+            with ui.column().classes("w-full gap-4") as analytics_panel:
+                section_heading(
+                    "Placement Analytics",
+                    "Review readiness and recruitment outcomes for students assigned to you.",
+                )
+                ui.separator()
+
+                mentor_student_options = {
+                    TABLEAU_ALL: "All assigned students",
+                    **{
+                        str(student.id): student.full_name
+                        for student in assigned_students
+                    },
+                }
+
+                mentor_students_by_id = {
+                    str(student.id): student
+                    for student in assigned_students
+                }
+
+                with ui.row().classes("w-full items-end gap-4 flex-wrap"):
+                    mentor_student_filter = ui.select(
+                        mentor_student_options,
+                        value=TABLEAU_ALL,
+                        label="Student",
+                    ).props(
+                        "outlined options-dense"
+                    ).classes(
+                        "w-full max-w-sm"
+                    )
+
+                    mentor_readiness_filter = ui.select(
+                        TABLEAU_READINESS_AREAS,
+                        value=TABLEAU_ALL,
+                        label="Readiness area",
+                    ).props(
+                        "outlined options-dense"
+                    ).classes(
+                        "w-full max-w-sm"
+                    )
+
+                mentor_tableau = ui.html(
+                    tableau_iframe(
+                        tableau_view_url(
+                            TABLEAU_MENTOR_URL,
+                            {
+                                "Mentor Name": user.full_name,
+                            },
+                        ),
+                        height=1200,
+                    ),
+                    sanitize=False,
+                ).classes("w-full")
+
+                def update_mentor_tableau():
+                    filters = {
+                        "Mentor Name": user.full_name,
+                    }
+
+                    selected_student = mentor_students_by_id.get(
+                        str(mentor_student_filter.value)
+                    )
+
+                    if selected_student:
+                        filters["Student Name"] = selected_student.full_name
+
+                    if mentor_readiness_filter.value != TABLEAU_ALL:
+                        filters["Readiness Area"] = mentor_readiness_filter.value
+
+                    mentor_tableau.set_content(
+                        tableau_iframe(
+                            tableau_view_url(
+                                TABLEAU_MENTOR_URL,
+                                filters,
+                            ),
+                            height=1200,
+                        )
+                    )
+
+                mentor_student_filter.on(
+                    "update:model-value",
+                    lambda _: update_mentor_tableau(),
+                )
+
+                mentor_readiness_filter.on(
+                    "update:model-value",
+                    lambda _: update_mentor_tableau(),
+                )
+
 
             priority_panel.set_visibility(False)
             sessions_panel.set_visibility(False)
             evaluations_panel.set_visibility(False)
+            analytics_panel.set_visibility(False)
     finally:
         db.close()
 
@@ -4560,54 +4831,272 @@ def faculty_page():
                 )
 
             with ui.column().classes("w-full gap-4") as analytics_panel:
-                section_heading("Placement Readiness Analytics", "Interactive Tableau analytics for cohort performance, mentor comparisons, interventions, and outcomes.")
+                section_heading(
+                    "Placement Readiness Analytics",
+                    "Explore cohort readiness, assessment effectiveness, and recruitment outcomes.",
+                )
                 ui.separator()
 
-                ui.label("Placement Readiness Analytics").classes(
-                    "text-2xl font-semibold"
-                )
+                faculty_students_by_id = {
+                    str(student.id): student
+                    for student in students
+                }
 
-                ui.label(
-                    "Cohort performance, student trends, mentor comparisons, "
-                    "interventions, and placement outcomes."
-                ).classes("text-gray-600")
+                faculty_mentors_by_id = {
+                    str(mentor.id): mentor
+                    for mentor in mentors
+                }
 
-                tableau_url = (
-                    "https://public.tableau.com/views/"
-                    "placement_readiness_analytics/"
-                    "PlacementReadinessAnalytics"
-                    "?:showVizHome=no"
-                    "&:embed=yes"
-                    "&:device=desktop"
-                    "&:toolbar=yes"
-                )
-
-                with ui.column().classes("w-full items-center"):
-                    ui.html(
-                        f"""
-                        <div style="
-                            width: 1200px;
-                            max-width: 100%;
-                            height: 1000px;
-                            margin: 0 auto;
-                            overflow: hidden;
-                        ">
-                            <iframe
-                                src="{tableau_url}"
-                                style="
-                                    width: 1200px;
-                                    height: 1000px;
-                                    max-width: none;
-                                    border: 0;
-                                    display: block;
-                                "
-                                frameborder="0"
-                                allowfullscreen>
-                            </iframe>
-                        </div>
-                        """,
-                        sanitize=False,
+                faculty_assignment_records = db.scalars(
+                    select(MentorStudentAssignment).where(
+                        MentorStudentAssignment.active.is_(True)
                     )
+                ).all()
+
+                faculty_students_by_mentor = {}
+
+                for assignment in faculty_assignment_records:
+                    faculty_students_by_mentor.setdefault(
+                        str(assignment.mentor_id),
+                        set(),
+                    ).add(
+                        str(assignment.student_id)
+                    )
+
+                faculty_all_student_options = {
+                    TABLEAU_ALL: "All students",
+                    **{
+                        str(student.id): student.full_name
+                        for student in students
+                    },
+                }
+
+                faculty_mentor_options = {
+                    TABLEAU_ALL: "All mentors",
+                    **{
+                        str(mentor.id): mentor.full_name
+                        for mentor in mentors
+                    },
+                }
+
+                with ui.row().classes("w-full items-end gap-4 flex-wrap"):
+                    faculty_student_filter = ui.select(
+                        faculty_all_student_options,
+                        value=TABLEAU_ALL,
+                        label="Student",
+                    ).props(
+                        "outlined options-dense"
+                    ).classes(
+                        "w-full max-w-sm"
+                    )
+
+                    faculty_mentor_filter = ui.select(
+                        faculty_mentor_options,
+                        value=TABLEAU_ALL,
+                        label="Mentor",
+                    ).props(
+                        "outlined options-dense"
+                    ).classes(
+                        "w-full max-w-sm"
+                    )
+
+                    faculty_readiness_filter = ui.select(
+                        TABLEAU_READINESS_AREAS,
+                        value=TABLEAU_ALL,
+                        label="Readiness area",
+                    ).props(
+                        "outlined options-dense"
+                    ).classes(
+                        "w-full max-w-sm"
+                    )
+
+                ui.add_head_html(
+                    '<script type="module" '
+                    'src="https://public.tableau.com/javascripts/api/'
+                    'tableau.embedding.3.latest.min.js"></script>'
+                )
+
+                faculty_tableau = ui.html(
+                    tableau_viz_element(
+                        TABLEAU_FACULTY_URL,
+                        "faculty-tableau-viz",
+                        height=1200,
+                    ),
+                    sanitize=False,
+                ).classes("w-full")
+
+                def update_faculty_tableau():
+                    selected_student = faculty_students_by_id.get(
+                        str(faculty_student_filter.value)
+                    )
+
+                    selected_mentor = faculty_mentors_by_id.get(
+                        str(faculty_mentor_filter.value)
+                    )
+
+                    readiness_area = faculty_readiness_filter.value
+                    assessment_types = TABLEAU_ASSESSMENTS_BY_READINESS_AREA.get(
+                        readiness_area
+                    )
+
+                    student_name = (
+                        selected_student.full_name
+                        if selected_student
+                        else None
+                    )
+                    mentor_name = (
+                        selected_mentor.full_name
+                        if selected_mentor
+                        else None
+                    )
+
+                    js_student_name = json.dumps(student_name)
+                    js_mentor_name = json.dumps(mentor_name)
+                    js_readiness_area = json.dumps(
+                        None
+                        if readiness_area == TABLEAU_ALL
+                        else readiness_area
+                    )
+                    js_assessment_types = json.dumps(assessment_types)
+
+                    ui.run_javascript(
+                        f"""
+                        (async () => {{
+                            const viz = document.getElementById('faculty-tableau-viz');
+                            if (!viz || !viz.workbook || !viz.workbook.activeSheet) {{
+                                return;
+                            }}
+
+                            const dashboard = viz.workbook.activeSheet;
+                            const worksheets = dashboard.worksheets || [];
+                            const studentName = {js_student_name};
+                            const mentorName = {js_mentor_name};
+                            const readinessArea = {js_readiness_area};
+                            const assessmentTypes = {js_assessment_types};
+
+                            const applyOrClearEverywhere = async (fieldName, value) => {{
+                                await Promise.all(worksheets.map(async worksheet => {{
+                                    try {{
+                                        if (value) {{
+                                            await worksheet.applyFilterAsync(
+                                                fieldName,
+                                                [value],
+                                                'replace'
+                                            );
+                                        }} else {{
+                                            await worksheet.clearFilterAsync(fieldName);
+                                        }}
+                                    }} catch (error) {{
+                                        // A worksheet may not contain this field.
+                                    }}
+                                }}));
+                            }};
+
+                            await applyOrClearEverywhere('Student Name', studentName);
+                            await applyOrClearEverywhere('Mentor Name', mentorName);
+
+                            const readinessSheets = [
+                                'Cohort Strengths and Weaknesses',
+                                'Cohort Improvement across Readiness Areas'
+                            ];
+
+                            await Promise.all(readinessSheets.map(async sheetName => {{
+                                const worksheet = worksheets.find(
+                                    item => item.name === sheetName
+                                );
+                                if (!worksheet) return;
+
+                                try {{
+                                    if (readinessArea) {{
+                                        await worksheet.applyFilterAsync(
+                                            'Readiness Area',
+                                            [readinessArea],
+                                            'replace'
+                                        );
+                                    }} else {{
+                                        await worksheet.clearFilterAsync('Readiness Area');
+                                    }}
+                                }} catch (error) {{
+                                    console.warn(
+                                        `Could not filter ${{sheetName}} by readiness area`,
+                                        error
+                                    );
+                                }}
+                            }}));
+
+                            const assessmentWorksheet = worksheets.find(
+                                item => item.name === 'Assessment Effectiveness'
+                            );
+
+                            if (assessmentWorksheet) {{
+                                try {{
+                                    if (assessmentTypes && assessmentTypes.length < 3) {{
+                                        await assessmentWorksheet.applyFilterAsync(
+                                            'Activity Type',
+                                            assessmentTypes,
+                                            'replace'
+                                        );
+                                    }} else {{
+                                        await assessmentWorksheet.clearFilterAsync(
+                                            'Activity Type'
+                                        );
+                                    }}
+                                }} catch (error) {{
+                                    console.warn(
+                                        'Could not map readiness area to assessments',
+                                        error
+                                    );
+                                }}
+                            }}
+                        }})();
+                        """
+                    )
+
+                def update_faculty_student_options():
+                    selected_mentor_id = str(
+                        faculty_mentor_filter.value
+                    )
+
+                    if selected_mentor_id == TABLEAU_ALL:
+                        options = faculty_all_student_options
+                    else:
+                        allowed_ids = faculty_students_by_mentor.get(
+                            selected_mentor_id,
+                            set(),
+                        )
+
+                        options = {
+                            TABLEAU_ALL: "All students",
+                            **{
+                                student_id: faculty_students_by_id[student_id].full_name
+                                for student_id in allowed_ids
+                                if student_id in faculty_students_by_id
+                            },
+                        }
+
+                    faculty_student_filter.options = options
+
+                    if faculty_student_filter.value not in options:
+                        faculty_student_filter.value = TABLEAU_ALL
+
+                    faculty_student_filter.update()
+                    update_faculty_tableau()
+
+                faculty_student_filter.on(
+                    "update:model-value",
+                    lambda _: update_faculty_tableau(),
+                )
+
+                faculty_mentor_filter.on(
+                    "update:model-value",
+                    lambda _: update_faculty_student_options(),
+                )
+
+                faculty_readiness_filter.on(
+                    "update:model-value",
+                    lambda _: update_faculty_tableau(),
+                )
+
 
 
             priorities_panel.set_visibility(False)

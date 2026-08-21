@@ -1,0 +1,91 @@
+outcome_id,student_id,student_name,target_company,target_role,company_name,role_name,stage,result,occurred_at,mentor_id,mentor_name
+1,6,student1,Amazon,Software Development Engineer,Amazon,Software Development Engineer,application,passed,2026-06-10 23:43:54.709071+00,2,mentor1
+2,6,student1,Amazon,Software Development Engineer,Amazon,Software Development Engineer,resume_screen,passed,2026-06-18 23:43:54.709071+00,2,mentor1
+3,6,student1,Amazon,Software Development Engineer,Amazon,Software Development Engineer,online_assessment,passed,2026-06-26 23:43:54.709071+00,2,mentor1
+4,6,student1,Amazon,Software Development Engineer,Amazon,Software Development Engineer,technical_interview,passed,2026-07-04 23:43:54.709071+00,2,mentor1
+5,6,student1,Amazon,Software Development Engineer,Amazon,Software Development Engineer,behavioral_interview,passed,2026-07-12 23:43:54.709071+00,2,mentor1
+6,6,student1,Amazon,Software Development Engineer,Amazon,Software Development Engineer,final_round,passed,2026-07-20 23:43:54.709071+00,2,mentor1
+7,6,student1,Amazon,Software Development Engineer,Amazon,Software Development Engineer,offer,passed,2026-07-28 23:43:54.709071+00,2,mentor1
+8,7,student2,Microsoft,Software Engineer,Microsoft,Software Engineer,application,passed,2026-06-09 23:43:54.709071+00,3,mentor2
+9,7,student2,Microsoft,Software Engineer,Microsoft,Software Engineer,resume_screen,passed,2026-06-17 23:43:54.709071+00,3,mentor2
+10,7,student2,Microsoft,Software Engineer,Microsoft,Software Engineer,online_assessment,passed,2026-06-25 23:43:54.709071+00,3,mentor2
+11,7,student2,Microsoft,Software Engineer,Microsoft,Software Engineer,technical_interview,passed,2026-07-03 23:43:54.709071+00,3,mentor2
+12,7,student2,Microsoft,Software Engineer,Microsoft,Software Engineer,behavioral_interview,passed,2026-07-11 23:43:54.709071+00,3,mentor2
+13,7,student2,Microsoft,Software Engineer,Microsoft,Software Engineer,final_round,passed,2026-07-19 23:43:54.709071+00,3,mentor2
+14,7,student2,Microsoft,Software Engineer,Microsoft,Software Engineer,offer,passed,2026-07-27 23:43:54.709071+00,3,mentor2
+15,8,student3,Google,Software Engineer,Google,Software Engineer,application,passed,2026-06-08 23:43:54.709071+00,4,mentor3
+16,8,student3,Google,Software Engineer,Google,Software Engineer,resume_screen,passed,2026-06-16 23:43:54.709071+00,4,mentor3
+17,8,student3,Google,Software Engineer,Google,Software Engineer,online_assessment,passed,2026-06-24 23:43:54.709071+00,4,mentor3
+18,8,student3,Google,Software Engineer,Google,Software Engineer,technical_interview,passed,2026-07-02 23:43:54.709071+00,4,mentor3
+19,8,student3,Google,Software Engineer,Google,Software Engineer,behavioral_interview,passed,2026-07-10 23:43:54.709071+00,4,mentor3
+20,8,student3,Google,Software Engineer,Google,Software Engineer,final_round,passed,2026-07-18 23:43:54.709071+00,4,mentor3
+21,8,student3,Google,Software Engineer,Google,Software Engineer,offer,passed,2026-07-26 23:43:54.709071+00,4,mentor3
+22,9,student4,Apple,Software Engineer,Apple,Software Engineer,application,passed,2026-06-11 23:43:54.709071+00,5,mentor4
+23,9,student4,Apple,Software Engineer,Apple,Software Engineer,resume_screen,passed,2026-06-19 23:43:54.709071+00,5,mentor4
+24,9,student4,Apple,Software Engineer,Apple,Software Engineer,online_assessment,passed,2026-06-27 23:43:54.709071+00,5,mentor4
+25,9,student4,Apple,Software Engineer,Apple,Software Engineer,technical_interview,passed,2026-07-05 23:43:54.709071+00,5,mentor4
+26,9,student4,Apple,Software Engineer,Apple,Software Engineer,behavioral_interview,passed,2026-07-13 23:43:54.709071+00,5,mentor4
+27,9,student4,Apple,Software Engineer,Apple,Software Engineer,final_round,passed,2026-07-21 23:43:54.709071+00,5,mentor4
+28,9,student4,Apple,Software Engineer,Apple,Software Engineer,offer,passed,2026-07-29 23:43:54.709071+00,5,mentor4
+29,10,student5,Amazon,Software Development Engineer,Amazon,Software Development Engineer,application,passed,2026-06-10 23:43:54.709071+00,2,mentor1
+30,10,student5,Amazon,Software Development Engineer,Amazon,Software Development Engineer,resume_screen,passed,2026-06-18 23:43:54.709071+00,2,mentor1
+31,10,student5,Amazon,Software Development Engineer,Amazon,Software Development Engineer,online_assessment,passed,2026-06-26 23:43:54.709071+00,2,mentor1
+32,10,student5,Amazon,Software Development Engineer,Amazon,Software Development Engineer,technical_interview,passed,2026-07-04 23:43:54.709071+00,2,mentor1
+33,10,student5,Amazon,Software Development Engineer,Amazon,Software Development Engineer,behavioral_interview,passed,2026-07-12 23:43:54.709071+00,2,mentor1
+34,10,student5,Amazon,Software Development Engineer,Amazon,Software Development Engineer,final_round,failed,2026-07-20 23:43:54.709071+00,2,mentor1
+35,11,student6,Microsoft,Software Engineer,Microsoft,Software Engineer,application,passed,2026-06-09 23:43:54.709071+00,3,mentor2
+36,11,student6,Microsoft,Software Engineer,Microsoft,Software Engineer,resume_screen,passed,2026-06-17 23:43:54.709071+00,3,mentor2
+37,11,student6,Microsoft,Software Engineer,Microsoft,Software Engineer,online_assessment,passed,2026-06-25 23:43:54.709071+00,3,mentor2
+38,11,student6,Microsoft,Software Engineer,Microsoft,Software Engineer,technical_interview,passed,2026-07-03 23:43:54.709071+00,3,mentor2
+39,11,student6,Microsoft,Software Engineer,Microsoft,Software Engineer,behavioral_interview,passed,2026-07-11 23:43:54.709071+00,3,mentor2
+40,11,student6,Microsoft,Software Engineer,Microsoft,Software Engineer,final_round,failed,2026-07-19 23:43:54.709071+00,3,mentor2
+41,12,student7,Google,Software Engineer,Google,Software Engineer,application,passed,2026-06-08 23:43:54.709071+00,4,mentor3
+42,12,student7,Google,Software Engineer,Google,Software Engineer,resume_screen,passed,2026-06-16 23:43:54.709071+00,4,mentor3
+43,12,student7,Google,Software Engineer,Google,Software Engineer,online_assessment,passed,2026-06-24 23:43:54.709071+00,4,mentor3
+44,12,student7,Google,Software Engineer,Google,Software Engineer,technical_interview,passed,2026-07-02 23:43:54.709071+00,4,mentor3
+45,12,student7,Google,Software Engineer,Google,Software Engineer,behavioral_interview,passed,2026-07-10 23:43:54.709071+00,4,mentor3
+46,12,student7,Google,Software Engineer,Google,Software Engineer,final_round,failed,2026-07-18 23:43:54.709071+00,4,mentor3
+47,13,student8,Apple,Software Engineer,Apple,Software Engineer,application,passed,2026-06-11 23:43:54.709071+00,5,mentor4
+48,13,student8,Apple,Software Engineer,Apple,Software Engineer,resume_screen,passed,2026-06-19 23:43:54.709071+00,5,mentor4
+49,13,student8,Apple,Software Engineer,Apple,Software Engineer,online_assessment,passed,2026-06-27 23:43:54.709071+00,5,mentor4
+50,13,student8,Apple,Software Engineer,Apple,Software Engineer,technical_interview,passed,2026-07-05 23:43:54.709071+00,5,mentor4
+51,13,student8,Apple,Software Engineer,Apple,Software Engineer,behavioral_interview,passed,2026-07-13 23:43:54.709071+00,5,mentor4
+52,13,student8,Apple,Software Engineer,Apple,Software Engineer,final_round,failed,2026-07-21 23:43:54.709071+00,5,mentor4
+53,14,student9,Amazon,Software Development Engineer,Amazon,Software Development Engineer,application,passed,2026-06-10 23:43:54.709071+00,2,mentor1
+54,14,student9,Amazon,Software Development Engineer,Amazon,Software Development Engineer,resume_screen,passed,2026-06-18 23:43:54.709071+00,2,mentor1
+55,14,student9,Amazon,Software Development Engineer,Amazon,Software Development Engineer,online_assessment,passed,2026-06-26 23:43:54.709071+00,2,mentor1
+56,14,student9,Amazon,Software Development Engineer,Amazon,Software Development Engineer,technical_interview,failed,2026-07-04 23:43:54.709071+00,2,mentor1
+57,15,student10,Microsoft,Software Engineer,Microsoft,Software Engineer,application,passed,2026-06-09 23:43:54.709071+00,3,mentor2
+58,15,student10,Microsoft,Software Engineer,Microsoft,Software Engineer,resume_screen,passed,2026-06-17 23:43:54.709071+00,3,mentor2
+59,15,student10,Microsoft,Software Engineer,Microsoft,Software Engineer,online_assessment,passed,2026-06-25 23:43:54.709071+00,3,mentor2
+60,15,student10,Microsoft,Software Engineer,Microsoft,Software Engineer,technical_interview,failed,2026-07-03 23:43:54.709071+00,3,mentor2
+61,16,student11,Google,Software Engineer,Google,Software Engineer,application,passed,2026-06-08 23:43:54.709071+00,4,mentor3
+62,16,student11,Google,Software Engineer,Google,Software Engineer,resume_screen,passed,2026-06-16 23:43:54.709071+00,4,mentor3
+63,16,student11,Google,Software Engineer,Google,Software Engineer,online_assessment,passed,2026-06-24 23:43:54.709071+00,4,mentor3
+64,16,student11,Google,Software Engineer,Google,Software Engineer,technical_interview,failed,2026-07-02 23:43:54.709071+00,4,mentor3
+65,17,student12,Apple,Software Engineer,Apple,Software Engineer,application,passed,2026-06-11 23:43:54.709071+00,5,mentor4
+66,17,student12,Apple,Software Engineer,Apple,Software Engineer,resume_screen,passed,2026-06-19 23:43:54.709071+00,5,mentor4
+67,17,student12,Apple,Software Engineer,Apple,Software Engineer,online_assessment,passed,2026-06-27 23:43:54.709071+00,5,mentor4
+68,17,student12,Apple,Software Engineer,Apple,Software Engineer,technical_interview,failed,2026-07-05 23:43:54.709071+00,5,mentor4
+69,18,student13,Amazon,Software Development Engineer,Amazon,Software Development Engineer,application,passed,2026-06-10 23:43:54.709071+00,2,mentor1
+70,18,student13,Amazon,Software Development Engineer,Amazon,Software Development Engineer,resume_screen,passed,2026-06-18 23:43:54.709071+00,2,mentor1
+71,18,student13,Amazon,Software Development Engineer,Amazon,Software Development Engineer,online_assessment,passed,2026-06-26 23:43:54.709071+00,2,mentor1
+72,18,student13,Amazon,Software Development Engineer,Amazon,Software Development Engineer,technical_interview,failed,2026-07-04 23:43:54.709071+00,2,mentor1
+73,19,student14,Microsoft,Software Engineer,Microsoft,Software Engineer,application,passed,2026-06-09 23:43:54.709071+00,3,mentor2
+74,19,student14,Microsoft,Software Engineer,Microsoft,Software Engineer,resume_screen,passed,2026-06-17 23:43:54.709071+00,3,mentor2
+75,19,student14,Microsoft,Software Engineer,Microsoft,Software Engineer,online_assessment,failed,2026-06-25 23:43:54.709071+00,3,mentor2
+76,20,student15,Google,Software Engineer,Google,Software Engineer,application,passed,2026-06-08 23:43:54.709071+00,4,mentor3
+77,20,student15,Google,Software Engineer,Google,Software Engineer,resume_screen,passed,2026-06-16 23:43:54.709071+00,4,mentor3
+78,20,student15,Google,Software Engineer,Google,Software Engineer,online_assessment,failed,2026-06-24 23:43:54.709071+00,4,mentor3
+79,21,student16,Apple,Software Engineer,Apple,Software Engineer,application,passed,2026-06-11 23:43:54.709071+00,5,mentor4
+80,21,student16,Apple,Software Engineer,Apple,Software Engineer,resume_screen,passed,2026-06-19 23:43:54.709071+00,5,mentor4
+81,21,student16,Apple,Software Engineer,Apple,Software Engineer,online_assessment,failed,2026-06-27 23:43:54.709071+00,5,mentor4
+82,22,student17,Amazon,Software Development Engineer,Amazon,Software Development Engineer,application,passed,2026-06-10 23:43:54.709071+00,2,mentor1
+83,22,student17,Amazon,Software Development Engineer,Amazon,Software Development Engineer,resume_screen,passed,2026-06-18 23:43:54.709071+00,2,mentor1
+84,22,student17,Amazon,Software Development Engineer,Amazon,Software Development Engineer,online_assessment,failed,2026-06-26 23:43:54.709071+00,2,mentor1
+85,23,student18,Microsoft,Software Engineer,Microsoft,Software Engineer,application,passed,2026-06-09 23:43:54.709071+00,3,mentor2
+86,23,student18,Microsoft,Software Engineer,Microsoft,Software Engineer,resume_screen,failed,2026-06-17 23:43:54.709071+00,3,mentor2
+87,24,student19,Google,Software Engineer,Google,Software Engineer,application,passed,2026-06-08 23:43:54.709071+00,4,mentor3
+88,24,student19,Google,Software Engineer,Google,Software Engineer,resume_screen,failed,2026-06-16 23:43:54.709071+00,4,mentor3
+89,25,student20,Apple,Software Engineer,Apple,Software Engineer,application,passed,2026-06-11 23:43:54.709071+00,5,mentor4
+90,25,student20,Apple,Software Engineer,Apple,Software Engineer,resume_screen,failed,2026-06-19 23:43:54.709071+00,5,mentor4
