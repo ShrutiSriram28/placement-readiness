@@ -565,7 +565,7 @@ def login_page():
                 "w-full max-w-md gap-4"
             ):
                 ui.label(
-                    "Welcome back"
+                    "Hello 👋"
                 ).classes(
                     "text-4xl font-bold text-slate-900"
                 )
